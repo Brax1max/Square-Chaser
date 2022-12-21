@@ -15,8 +15,8 @@ namespace Square_Chaser
         Random rangen = new Random();
         Rectangle player1 = new Rectangle(295, 195, 10, 10);
         Rectangle player2 = new Rectangle(295, 195, 10, 10);
-        Rectangle Point = new Rectangle(295, 195, 10, 10);
-        Rectangle Speed = new Rectangle(295, 195, 10, 10);
+        Rectangle Point = new Rectangle(295, 150, 10, 10);
+        Rectangle Speed = new Rectangle(295, 50, 10, 10);
 
         int player1Score = 0;
         int player2Score = 0;
@@ -39,16 +39,38 @@ namespace Square_Chaser
         SolidBrush whiteBrush = new SolidBrush(Color.White);
         SolidBrush greenBrush = new SolidBrush(Color.Green);
         SolidBrush redBrush = new SolidBrush(Color.Red);
+
+        string gameState = "waiting";
         public Form1()
         {
 
             InitializeComponent();
+            winLabel.Visible = false;
 
         }
 
+        public void GameSetup()
+        {
+            gameState = "running";
+
+            titleLabel.Text = "";
+            subtitleLabel.Text = "";
+
+            timer1.Enabled = true;
+            //time = 500;
+            //score = 0;
+
+            //hero.X = 280;
+
+            //balls.Clear();
+            //ballSpeeds.Clear();
+            //ballColours.Clear();
+        }
+
+
         private void timer1_Tick(object sender, EventArgs e)
         {
-           
+
 
             //move player 1 
             if (wDown == true && player1.Y > 0)
@@ -68,6 +90,7 @@ namespace Square_Chaser
             {
                 player1.X -= playerSpeed;
             }
+
 
             //move player 2 
             if (upArrowDown == true && player2.Y > 0)
@@ -98,7 +121,7 @@ namespace Square_Chaser
             //and place the ball in front of the player hit 
             if (player1.IntersectsWith(Point))
             {
-                int POINTX = rangen.Next(0,662);
+                int POINTX = rangen.Next(0, 662);
                 int POINTY = rangen.Next(0, 449);
                 Point.X = POINTX;
                 Point.Y = POINTY;
@@ -158,7 +181,7 @@ namespace Square_Chaser
             // check score and stop game if either player is at 3 
             if (player1Score == 10)
             {
-                timer1.Enabled = false; 
+                timer1.Enabled = false;
                 winLabel.Visible = true;
                 winLabel.Text = "Player 1 Wins!!";
             }
@@ -167,7 +190,9 @@ namespace Square_Chaser
                 timer1.Enabled = false;
                 winLabel.Visible = true;
                 winLabel.Text = "Player 2 Wins!!";
+                gameState = "over";
             }
+          
 
 
             Refresh();
@@ -200,6 +225,18 @@ namespace Square_Chaser
                     break;
                 case Keys.Left:
                     leftArrowDown = true;
+                    break;
+                case Keys.Space:
+                    if (gameState == "waiting" || gameState == "over")
+                    {
+                        GameSetup();
+                    }
+                    break;
+                case Keys.Escape:
+                    if (gameState == "waiting" || gameState == "over")
+                    {
+                        this.Close();
+                    }
                     break;
 
             }
@@ -238,15 +275,31 @@ namespace Square_Chaser
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.FillRectangle(blueBrush, player1);
-            e.Graphics.FillRectangle(greenBrush, player2);
-            e.Graphics.FillRectangle(whiteBrush, Point);
-            e.Graphics.FillRectangle(redBrush, Speed);
-        }
+            if (gameState == "waiting")
+            {
 
-        private void label1_Click(object sender, EventArgs e)
-        {
+                p1ScoreLabel.Text = "";
 
+                p2ScoreLabel.Text = "";
+
+                titleLabel.Text = "Catch Game";
+                subtitleLabel.Text = "Press Space to Start or Esc to Exit";
+            }
+            else if (gameState == "running")
+            {
+                e.Graphics.FillRectangle(blueBrush, player1);
+                e.Graphics.FillRectangle(greenBrush, player2);
+                e.Graphics.FillRectangle(whiteBrush, Point);
+                e.Graphics.FillRectangle(redBrush, Speed);
+            }
+            else if (gameState == "over")
+            {
+                p1ScoreLabel.Text = "";
+                p2ScoreLabel.Text = "";
+
+                titleLabel.Text = "Game Over";
+                subtitleLabel.Text = "Press Space to Start or Esc to Exit";
+            }
         }
     }
 }
